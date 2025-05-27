@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFA Date Calculator</title>
+    <title>Lead Time Calculator</title>
     <style>
         * {
             margin: 0;
@@ -139,11 +139,11 @@
 <body>
     <div class="calculator">
         <div class="header">
-            📅 DFA Date Calculator
+            📅 Lead Time Calculator
         </div>
         
         <div class="form-group">
-            <label for="dfaDate">DFA Date</label>
+            <label for="dfaDate">Start Date</label>
             <input type="date" id="dfaDate">
         </div>
         
@@ -180,14 +180,7 @@
         const results = document.getElementById('results');
         const emailOutput = document.getElementById('emailOutput');
 
-        // Set date input constraints
-        const minDate = new Date(today);
-        minDate.setDate(today.getDate() - 3);
-        const maxDate = new Date(today);
-        maxDate.setDate(today.getDate() + 3);
-
-        dfaDateInput.min = minDate.toISOString().split('T')[0];
-        dfaDateInput.max = maxDate.toISOString().split('T')[0];
+        // Set default date to today (no constraints)
         dfaDateInput.value = today.toISOString().split('T')[0];
 
         // Update lead time display
