@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Time Calculator - Operations Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            color: #BFBFBF;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav {
+            width: 100%;
+            max-width: 560px;
+            margin-bottom: 40px;
+        }
+
+        .nav a {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #444;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .nav a:hover { color: #BFBFBF; }
+
+        .card {
+            background: #0d0d0d;
+            border: 1px solid #1e1e1e;
+            border-radius: 4px;
+            padding: 36px;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        h1 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #E6E6E6;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: #444;
+            margin-bottom: 32px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #BFBFBF;
+            margin-bottom: 8px;
+        }
+
+        .label-hint {
+            font-weight: 400;
+            color: #444;
+            letter-spacing: 0.06em;
+            text-transform: none;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            background: #000;
+            border: 1px solid #222;
+            color: #E6E6E6;
+            border-radius: 2px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.15s;
+            color-scheme: dark;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 2px;
+            background: #222;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #BFBFBF;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #BFBFBF;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .range-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #E6E6E6;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            letter-spacing: 0.08em;
+            color: #333;
+            margin-top: 6px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: #BFBFBF;
+            color: #000;
+            border: none;
+            border-radius: 2px;
+            padding: 12px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+            transition: background 0.15s;
+        }
+
+        .calculate-btn:hover { background: #ddd; }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #1a1a1a;
+            margin: 28px 0;
+        }
+
+        /* Results */
+        .result { display: none; margin-top: 28px; }
+        .result.show { display: block; }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #E6E6E6;
+        }
+
+        .copy-btn {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #BFBFBF;
+            border-radius: 2px;
+            padding: 6px 12px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover {
+            background: #222;
+            color: #E6E6E6;
+        }
+
+        .email-output {
+            background: #000;
+            border: 1px solid #1a1a1a;
+            border-radius: 2px;
+            padding: 20px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #BFBFBF;
+            letter-spacing: 0.02em;
+        }
+
+        .date-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 16px;
+        }
+
+        .date-item-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .date-item-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #E6E6E6;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        <a href="../index.html">← Operations Toolkit</a>
+    </div>
+
+    <div class="card">
+        <h1>Lead Time Calculator</h1>
+        <p class="subtitle">Calculate key dates from DFA confirmation</p>
+
+        <div class="input-group">
+            <label>DFA Date <span class="label-hint">(design freeze / approval date)</span></label>
+            <input type="date" id="dfaDate">
+        </div>
+
+        <div class="input-group">
+            <label>Lead Time &nbsp;<span class="label-hint" id="leadTimeDisplay">10 weeks</span></label>
+            <div class="range-wrapper">
+                <input type="range" id="leadTime" min="4" max="18" value="10">
+                <div class="range-value" id="leadTimeValue">10 wks</div>
+            </div>
+            <div class="range-labels">
+                <span>4 weeks</span>
+                <span>18 weeks</span>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateDates()">Calculate Dates</button>
+
+        <div id="result" class="result">
+            <hr class="divider">
+
+            <div class="date-breakdown" id="dateBreakdown"></div>
+
+            <div class="result-header">
+                <div class="result-title">Generated Email</div>
+                <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">Copy</button>
+            </div>
+            <div class="email-output" id="emailOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        const today = new Date();
+        const dfaDateInput = document.getElementById('dfaDate');
+        const leadTimeInput = document.getElementById('leadTime');
+        const leadTimeValue = document.getElementById('leadTimeValue');
+
+        dfaDateInput.value = today.toISOString().split('T')[0];
+
+        leadTimeInput.addEventListener('input', function() {
+            leadTimeValue.textContent = this.value + ' wks';
+        });
+
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function addBusinessDays(date, days) {
+            let d = new Date(date);
+            let added = 0;
+            while (added < days) {
+                d.setDate(d.getDate() + 1);
+                if (!isWeekend(d)) added++;
+            }
+            while (isWeekend(d)) d.setDate(d.getDate() + 1);
+            return d;
+        }
+
+        function subtractBusinessDays(date, days) {
+            let d = new Date(date);
+            let subtracted = 0;
+            while (subtracted < days) {
+                d.setDate(d.getDate() - 1);
+                if (!isWeekend(d)) subtracted++;
+            }
+            while (isWeekend(d)) d.setDate(d.getDate() - 1);
+            return d;
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatShort(date) {
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function calculateDates() {
+            const selectedDate = new Date(dfaDateInput.value);
+            const leadTimeWeeks = parseInt(leadTimeInput.value);
+
+            const shippingDate          = addBusinessDays(selectedDate, leadTimeWeeks * 5);
+            const balanceInvoiceDate    = subtractBusinessDays(shippingDate, 6 * 5);
+            const balancePaymentDueDate = subtractBusinessDays(shippingDate, 10);
+
+            // Breakdown
+            const breakdown = document.getElementById('dateBreakdown');
+            breakdown.innerHTML = `
+                <div class="date-item">
+                    <span class="date-item-label">Shipping Date</span>
+                    <span class="date-item-value">${formatShort(shippingDate)}</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-item-label">Balance Invoice <span style="color:#333">(6 wks prior)</span></span>
+                    <span class="date-item-value">${formatShort(balanceInvoiceDate)}</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-item-label">Payment Due <span style="color:#333">(10 days prior)</span></span>
+                    <span class="date-item-value">${formatShort(balancePaymentDueDate)}</span>
+                </div>
+            `;
+
+            const emailText =
+`Confirming we have received the DFA.
+
+Important dates for your order:
+- Shipping Date: ${formatDate(shippingDate)}
+- Balance Invoice Send Date: ${formatDate(balanceInvoiceDate)} (6 weeks prior to shipping)
+- Balance Payment Due Date: ${formatDate(balancePaymentDueDate)} (10 days prior to shipping)
+
+Best Regards,
+Jordan`;
+
+            document.getElementById('emailOutput').textContent = emailText;
+            document.getElementById('result').classList.add('show');
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('emailOutput').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = 'Copied';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
+        document.addEventListener('keypress', e => {
+            if (e.key === 'Enter') calculateDates();
+        });
+    </script>
+</body>
+</html>
