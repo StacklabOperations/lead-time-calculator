@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: #BFBFBF;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .tools-container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tool-button {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #BFBFBF;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            gap: 16px;
+        }
+
+        .tool-button:hover {
+            background: #1a1a1a;
+            border-color: #444;
+            transform: translateY(-4px);
+        }
+
+        .tool-icon {
+            font-size: 52px;
+            line-height: 1;
+        }
+
+        .tool-name {
+            font-size: 0.72em;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Live Inventory — featured card, full black with white text */
+        .tool-button.featured {
+            background: #000;
+            border: 1px solid #333;
+            color: #E6E6E6;
+        }
+
+        .tool-button.featured:hover {
+            background: #0d0d0d;
+            border-color: #666;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #E6E6E6;
+            animation: blink 1.8s ease-in-out infinite;
+            margin-bottom: -8px;
+            align-self: flex-end;
+            margin-right: 28px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.2; }
+        }
+
+        @media (max-width: 768px) {
+            .tool-button { width: 160px; height: 160px; }
+            .tool-icon { font-size: 40px; }
+            .tool-name { font-size: 0.65em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Operations Toolkit</h1>
+    </div>
+
+    <div class="tools-container">
+
+        <a href="tools/lead-time-calculator.html" class="tool-button">
+            <div class="tool-icon">⏱️</div>
+            <div class="tool-name">Lead Time</div>
+        </a>
+
+        <a href="tools/safety-stock-calculator.html" class="tool-button">
+            <div class="tool-icon">📦</div>
+            <div class="tool-name">Safety Stock</div>
+        </a>
+
+        <a href="tools/felt-inventory.html" class="tool-button featured">
+            <div class="live-dot"></div>
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2"  y="2"  width="21" height="21" rx="3" fill="#E6E6E6" opacity="0.9"/>
+                <rect x="29" y="2"  width="21" height="21" rx="3" fill="#E6E6E6" opacity="0.6"/>
+                <rect x="2"  y="29" width="21" height="21" rx="3" fill="#E6E6E6" opacity="0.6"/>
+                <rect x="29" y="29" width="21" height="21" rx="3" fill="#E6E6E6" opacity="0.3"/>
+            </svg>
+            <div class="tool-name">Live Inventory</div>
+        </a>
+
+    </div>
+</body>
+</html>
