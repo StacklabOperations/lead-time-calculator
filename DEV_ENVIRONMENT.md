@@ -7,9 +7,24 @@ deployment process, and standard build pattern.
 > **End every Claude Code session with DEVSUM** to generate a structured 
 > handoff report. Bring that report back to the MRP project chat to 
 > update the context docs. DEVSUM prompt is defined in CLAUDE.md.
+
+---
+
+## Local Setup
+
+- Repo is cloned and lives at: /Users/jordan/ops-toolkit
+- Open Claude Code (Code tab in Claude Desktop)
+- Select /Users/jordan/ops-toolkit as the working directory
+- Claude Code will auto-pull from GitHub at the start of each session
+  and wait for you to say "push" before sending changes back
+
+You never need to touch Terminal — Claude Code handles 
+git pull and git push from inside the session.
+
 ---
 
 ## Repo
+
 - **GitHub:** https://github.com/StacklabOperations/ops-toolkit
 - **Hosted at:** GitHub Pages (check repo Settings → Pages for live URL)
 - **Structure:**
@@ -18,22 +33,8 @@ deployment process, and standard build pattern.
   - `assets/` — shared images/icons
   - `worker/worker.js` — Cloudflare Worker source (version controlled here)
   - `STACKABL_APPS_STYLE_GUIDE.md` — UI design system, read before any UI work
+  - `CLAUDE.md` — Claude Code session instructions (auto-loaded)
   - `DEV_ENVIRONMENT.md` — this file
-
----
-## Local Setup (one-time)
-
-1. Install GitHub Desktop: https://desktop.github.com
-2. Clone the repo — in Terminal run:
-   git clone https://github.com/StacklabOperations/ops-toolkit.git
-   Default save location: /Users/[yourname]/ops-toolkit
-3. Open Claude Code (Code tab in Claude Desktop)
-4. Select the ops-toolkit folder as your working directory
-5. Claude Code will auto-pull from GitHub at the start of each session
-   and wait for you to say "push" before sending changes back
-
-You never need to touch Terminal again after this — Claude Code 
-handles git pull and git push from inside the session.
 
 ---
 
@@ -72,17 +73,50 @@ Worker source code lives at worker/worker.js in this repo.
 - Parts have a numeric Partnumber (e.g. 100463) and a human-readable 
   Manufacturer P/N / MPN (e.g. SA-CUT-DISC5-FT-529CHAM3)
 - Always look up parts by MPN (manufacturerPn field) not Partnumber
+- manufacturerPn is the correct camelCase filter field — manufacturer_pn 
+  is rejected
 - Part 100464 is a generic pivot part — always exclude from queries
 - Felt parts: part type "Felt", UOM sqft, native unit (already converted 
   from Bolt Yards by Aligni, 1 Bolt Yard = 17.49 sqft)
 - Cut disc parts: part type "Sheet-Cut Profile", UOM each
 - Operations: part type "Operations General", UOM each
-- BOMs are called "Part Lists" in Aligni
+- BOMs are called "Part Lists" in Aligni — BOM line items are called 
+  "subparts" in the GraphQL API (not "part list items")
 - Part must be in DRAFT revision state to edit its BOM
-- Revision names are integers as strings: "1", "2", "3"
-- Rate limit: 10 requests/minute — always add 200ms delay between calls
+- Revision names are integers as strings: "1", "2", "3" — when creating 
+  a new revision scan ALL revisions (not just active) to find the true 
+  max and increment from there; preserve zero-padding ("01" → "02")
+- Rate limit: confirmed 10 req/min (account should be 30/min — support 
+  ticket open); use 6100ms delay between calls until resolved, then 
+  drop to 2100ms once Aligni upgrades the account
 - Always introspect live schema before writing mutations — never guess 
   field names
+
+### GraphQL API quirks (discovered in production)
+- Filter values must be inlined into query strings — OperatorScalar type 
+  rejects GraphQL String variables ($mpn: String! causes type mismatch)
+- errors field on all mutation payloads is a String scalar — query as 
+  errors not errors { message }
+- subpartCreate requires the component's revision ID not the part ID 
+  (subpartPartRevisionId field)
+- partRevisionActivate does not exist — activation is done via 
+  revisionActive: true on PartRevisionReleaseInput when calling 
+  partRevisionRelease — this releases and activates in one call
+- PartRevisionUpdateInput does not accept an active field
+- partRevisionDelete mutation name is not yet confirmed in production — 
+  treat as unverified until tested
+
+### GraphQL operations reference (confirmed working)
+- parts(filters) query: lookup by manufacturerPn; returns part ID, 
+  partNumber, all revisions with status/active/subparts
+- subpartDelete(subpartId): removes an existing BOM line item
+- partRevisionCreate(sourcePartRevisionId, partRevisionInput): creates 
+  new draft from a released revision; input fields revisionName, 
+  revisionReason
+- subpartCreate(subpartInput): adds a BOM line; requires partRevisionId 
+  (assembly revision) + subpartPartRevisionId (component active revision)
+- partRevisionRelease(partRevisionId, partRevisionReleaseInput): releases 
+  a draft; use revisionActive: true to simultaneously set as active
 
 ### Custom parameters on Felt parts
 - Thickness (mm): "3" or "4.8" (4.8mm marketed as 5mm)
@@ -110,6 +144,7 @@ Worker source code lives at worker/worker.js in this repo.
 7. Save a spec file alongside it: tools/[tool-name]-spec.md
 8. The spec should document: what it does, how it works, what GraphQL 
    operations it uses, any gotchas or Aligni quirks discovered
+9. Run DEVSUM at end of session and bring report to MRP project chat
 
 ---
 
@@ -118,13 +153,10 @@ Worker source code lives at worker/worker.js in this repo.
 Changes pushed to the main branch on GitHub automatically deploy via 
 GitHub Pages. No build step required — it's static HTML.
 
-To push changes:
+Claude Code handles deployment — just say "push" and it will:
   git add .
-  git commit -m "describe what you built"
+  git commit -m "describe what was built"
   git push origin main
-
-Or use the GitHub web interface: navigate to the file, click Edit (pencil), 
-make changes, click Commit changes.
 
 ---
 
@@ -132,8 +164,19 @@ make changes, click Commit changes.
 
 | Tool | File | What it does |
 |------|------|-------------|
-| Felt Inventory Dashboard | tools/felt-dashboard.html | Live felt inventory with linear inch calculations |
-| BOM Importer | tools/bom-importer.html | Bulk import BOM CSVs to Aligni via drag and drop |
+| Felt Inventory Dashboard | tools/felt-dashboard.html | Live felt inventory with available sqft and linear inch calculations by colour |
+| BOM Importer | tools/bom-importer.html | Bulk import BOM CSVs to Aligni via drag and drop with dry-run preview and release workflow |
+
+---
+
+## Open Issues
+
+- Aligni rate limit stuck at 10 req/min — support ticket open to activate 
+  30/min plan entitlement. Once resolved, change IMPORT_DELAY in 
+  tools/bom-importer.html line ~407 from 6100 to 2100.
+- tools/bom-importer-spec.md not yet created — Claude Code to generate 
+  on next session.
+- Full 37-file BOM batch not yet tested end-to-end — pending rate limit fix.
 
 ---
 
