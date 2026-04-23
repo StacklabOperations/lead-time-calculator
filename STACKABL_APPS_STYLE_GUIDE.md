@@ -1,4 +1,4 @@
-[STACKABL_APPS_STYLE_GUIDE.md](https://github.com/user-attachments/files/27021833/STACKABL_APPS_STYLE_GUIDE.md)
+[STACKABL_APPS_STYLE_GUIDE.md](https://github.com/user-attachments/files/27022270/STACKABL_APPS_STYLE_GUIDE.md)
 # Operations Toolkit — Style Guide
 
 Design language for all tools in the STACKABL Operations Toolkit.
@@ -99,15 +99,50 @@ All colours are delivered via CSS custom properties. Override `[data-theme="ligh
 
 ## Layout
 
-- **Max content width:** `560px` for single-column tools (calculators)
+- **Max content width:** `560px` for single-column tools (calculators); `1000px` for wide tools (tables, bulk importers)
 - **Card padding:** `36px`
 - **Body padding:** `40px 20px`
 - **Input group spacing:** `20px` margin-bottom
-- **Section dividers:** `<hr>` with `border-top: 1px solid #1a1a1a`, `margin: 28px 0`
+- **Section dividers:** `<hr>` with `border-top: 1px solid var(--divider)`, `margin: 28px 0`
 
 ---
 
 ## Components
+
+### API Activity Bar
+
+Fixed 2px bar at the very top of the viewport. Sweeping shimmer animation shows whenever a network request is in flight. Use a request counter so nested calls don't flicker.
+
+```html
+<div id="apiBar"></div>  <!-- place before main content wrapper -->
+```
+
+```css
+#apiBar {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  z-index: 9999; pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%, var(--progress-fill) 40%, var(--text-hi) 50%,
+    var(--progress-fill) 60%, transparent 100%);
+  background-size: 300% 100%;
+  opacity: 0; transition: opacity 0.15s;
+  animation: apiBarSweep 1.2s linear infinite;
+}
+#apiBar.active { opacity: 1; }
+@keyframes apiBarSweep {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+```
+
+```js
+let _apiInflight = 0;
+function _apiActive(on) {
+  _apiInflight = Math.max(0, _apiInflight + (on ? 1 : -1));
+  document.getElementById('apiBar').classList.toggle('active', _apiInflight > 0);
+}
+// Wrap every fetch: _apiActive(true) before, _apiActive(false) in finally
+```
 
 ### Theme Toggle
 
