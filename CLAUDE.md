@@ -46,4 +46,10 @@ ALIGNI DISCOVERIES (corrections or new knowledge):
 DECISIONS MADE DURING BUILD:
 - [anything not in the brief that had to be figured out]
 
-OUTSTANDING ISSUES / W
+OUTSTANDING ISSUES / WATCH POINTS:
+- [anything fragile or needing future attention]
+
+CONTEXT UPDATES NEEDED:
+- DEV_ENVIRONMENT.md: [specific line or section to add/correct]
+- Project Log: [one paragraph summary for the log]
+- Spec file saved at: [path]"
