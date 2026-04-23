@@ -4,6 +4,23 @@ Read DEV_ENVIRONMENT.md before doing anything in this repo.
 
 ---
 
+## DEFAULT BEHAVIOUR
+
+At the start of every session, before doing anything else:
+1. Run `git pull` to get the latest changes from GitHub
+2. Confirm to the user: "Pulled latest from GitHub. Ready to work."
+
+Do not push to GitHub unless the user explicitly asks. When the user 
+asks to push, run:
+  git add .
+  git commit -m "[brief description of what was built or changed]"
+  git push origin main
+
+Then confirm: "Pushed to GitHub. Changes will be live on GitHub Pages 
+in a minute or two."
+
+---
+
 ## DEVSUM
 
 When the user says DEVSUM, generate a structured handoff report 
@@ -29,10 +46,4 @@ ALIGNI DISCOVERIES (corrections or new knowledge):
 DECISIONS MADE DURING BUILD:
 - [anything not in the brief that had to be figured out]
 
-OUTSTANDING ISSUES / WATCH POINTS:
-- [anything fragile or needing future attention]
-
-CONTEXT UPDATES NEEDED:
-- DEV_ENVIRONMENT.md: [specific line or section to add/correct]
-- Project Log: [one paragraph summary for the log]
-- Spec file saved at: [path]"
+OUTSTANDING ISSUES / W
