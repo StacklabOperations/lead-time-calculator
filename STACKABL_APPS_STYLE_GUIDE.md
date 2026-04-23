@@ -1,3 +1,4 @@
+[STACKABL_APPS_STYLE_GUIDE.md](https://github.com/user-attachments/files/27021833/STACKABL_APPS_STYLE_GUIDE.md)
 # Operations Toolkit — Style Guide
 
 Design language for all tools in the STACKABL Operations Toolkit.
@@ -6,32 +7,75 @@ Design language for all tools in the STACKABL Operations Toolkit.
 
 ## Principles
 
-- **Black first.** Every surface is black or near-black. No light backgrounds.
-- **Two text colours only.** `#E6E6E6` for dominant values. `#BFBFBF` for everything else.
+- **Two modes, one system.** Every tool ships with both dark and light modes via CSS custom properties. Dark is default.
+- **Two text colours only per mode.** High-emphasis and body text — no more than two neutrals in use at a time.
 - **Two type sizes only.** `1.1rem` bold for dominant numbers. `0.75rem` for labels and secondary text.
-- **Minimal decoration.** No gradients, shadows, or rounded corners (except `border-radius: 2px` on inputs/buttons). Borders are subtle — `#1e1e1e` or `#222`.
+- **Minimal decoration.** No gradients, shadows, or rounded corners (except `border-radius: 2px` on inputs/buttons). Borders are always subtle.
 - **Uppercase labels.** All labels and button text are `text-transform: uppercase` with wide letter-spacing.
 
 ---
 
 ## Colour Palette
 
-| Role | Hex | Usage |
-|------|-----|-------|
-| Page background | `#000` | `body` background |
-| Card background | `#0d0d0d` | Tool cards, form areas |
-| Input background | `#000` | Inside inputs |
-| Subtle border | `#1e1e1e` | Card borders, dividers |
-| Input border | `#222` | Input fields |
-| Dominant text | `#E6E6E6` | Headline numbers, result values |
-| Body text | `#BFBFBF` | Labels, descriptions, secondary values |
-| Muted text | `#555` | Breakdown labels, hints |
-| Ghost text | `#444` | Subtitles, placeholder-level content |
-| Invisible text | `#333` | Operator symbols (=, or), deep hints |
-| Button fill | `#BFBFBF` | Primary CTA background |
-| Button text | `#000` | Primary CTA text |
-| Refresh/ghost btn border | `#222` | Ghost button border |
-| Refresh/ghost btn text | `#DDDDDD` | Ghost button text |
+All colours are delivered via CSS custom properties. Override `[data-theme="light"]` to switch modes.
+
+### Dark Mode (default)
+
+| Variable | Hex | Role |
+|----------|-----|------|
+| `--bg` | `#000000` | Page background |
+| `--bg-card` | `#0d0d0d` | Card / panel background |
+| `--bg-hover` | `#111111` | Hover / active surface |
+| `--border` | `#1e1e1e` | Card borders, dividers |
+| `--border-mid` | `#222222` | Input borders |
+| `--border-strong` | `#333333` | Emphasis borders |
+| `--text-hi` | `#E6E6E6` | Dominant values, headings |
+| `--text` | `#BFBFBF` | Body text, labels |
+| `--text-muted` | `#555555` | Secondary labels, hints |
+| `--text-ghost` | `#444444` | Placeholder-level content |
+| `--btn-bg` | `#BFBFBF` | Primary button background |
+| `--btn-color` | `#000000` | Primary button text |
+| `--btn-hover` | `#E6E6E6` | Primary button hover |
+| `--btn-dis-bg` | `#333333` | Disabled button background |
+| `--btn-dis-color` | `#666666` | Disabled button text |
+| `--ghost-color` | `#DDDDDD` | Ghost button text |
+| `--ghost-border` | `#222222` | Ghost button border |
+| `--ghost-hover` | `#555555` | Ghost button border hover |
+| `--progress-bg` | `#111111` | Progress bar track |
+| `--progress-fill` | `#BFBFBF` | Progress bar fill |
+
+### Light Mode
+
+| Variable | Hex | Role |
+|----------|-----|------|
+| `--bg` | `#f2f2f2` | Page background |
+| `--bg-card` | `#ffffff` | Card / panel background |
+| `--bg-hover` | `#e8e8e8` | Hover / active surface |
+| `--border` | `#e0e0e0` | Card borders, dividers |
+| `--border-mid` | `#cccccc` | Input borders |
+| `--border-strong` | `#bbbbbb` | Emphasis borders |
+| `--text-hi` | `#111111` | Dominant values, headings |
+| `--text` | `#333333` | Body text, labels |
+| `--text-muted` | `#888888` | Secondary labels, hints |
+| `--text-ghost` | `#aaaaaa` | Placeholder-level content |
+| `--btn-bg` | `#111111` | Primary button background |
+| `--btn-color` | `#ffffff` | Primary button text |
+| `--btn-hover` | `#333333` | Primary button hover |
+| `--btn-dis-bg` | `#cccccc` | Disabled button background |
+| `--btn-dis-color` | `#999999` | Disabled button text |
+| `--ghost-color` | `#333333` | Ghost button text |
+| `--ghost-border` | `#cccccc` | Ghost button border |
+| `--ghost-hover` | `#888888` | Ghost button border hover |
+| `--progress-bg` | `#e0e0e0` | Progress bar track |
+| `--progress-fill` | `#333333` | Progress bar fill |
+
+### Functional Colours (both modes)
+
+| Hex | Usage |
+|-----|-------|
+| `#4CAF50` | Success, found, done |
+| `#FF9800` | Warning, released state, new revision |
+| `#f44336` | Error, not found |
 
 ---
 
@@ -64,6 +108,38 @@ Design language for all tools in the STACKABL Operations Toolkit.
 ---
 
 ## Components
+
+### Theme Toggle
+
+Place in the nav row (flex, space-between). Reads/writes `localStorage` key `stackabl-theme`.
+
+```html
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">Light Mode</button>
+```
+
+```css
+.theme-toggle {
+  background: transparent; border: 1px solid var(--border-mid);
+  color: var(--text-muted); border-radius: 2px;
+  padding: 5px 10px; font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer;
+}
+.theme-toggle:hover { border-color: var(--text-muted); color: var(--text); }
+```
+
+```js
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') !== 'light' ? 'light' : 'dark';
+  applyTheme(next);
+  localStorage.setItem('stackabl-theme', next);
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent =
+    theme === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+applyTheme(localStorage.getItem('stackabl-theme') || 'dark');
+```
 
 ### Nav / Back Link
 ```html
