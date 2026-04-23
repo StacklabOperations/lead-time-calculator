@@ -21,6 +21,21 @@ deployment process, and standard build pattern.
   - `DEV_ENVIRONMENT.md` — this file
 
 ---
+## Local Setup (one-time)
+
+1. Install GitHub Desktop: https://desktop.github.com
+2. Clone the repo — in Terminal run:
+   git clone https://github.com/StacklabOperations/ops-toolkit.git
+   Default save location: /Users/[yourname]/ops-toolkit
+3. Open Claude Code (Code tab in Claude Desktop)
+4. Select the ops-toolkit folder as your working directory
+5. Claude Code will auto-pull from GitHub at the start of each session
+   and wait for you to say "push" before sending changes back
+
+You never need to touch Terminal again after this — Claude Code 
+handles git pull and git push from inside the session.
+
+---
 
 ## API Layer — Cloudflare Worker
 
