@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl * stackabl-aligni-proxy.operations-dae.workers.dev *)",
+      "Bash(curl * stackabl-supplier-intake.operations-dae.workers.dev *)",
+      "Bash(/opt/homebrew/bin/npx wrangler *)",
+      "Bash(/opt/homebrew/bin/brew *)",
+      "Bash(/opt/homebrew/bin/node *)",
+      "mcp__Claude_Preview__preview_screenshot",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_Preview__preview_list",
+      "mcp__ccd_session__mark_chapter"
+    ]
+  }
+}
