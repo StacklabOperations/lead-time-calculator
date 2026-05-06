@@ -2,7 +2,6 @@
   "permissions": {
     "allow": [
       "Bash(curl * stackabl-aligni-proxy.operations-dae.workers.dev *)",
-      "Bash(curl * stackabl-supplier-intake.operations-dae.workers.dev *)",
       "Bash(/opt/homebrew/bin/npx wrangler *)",
       "Bash(/opt/homebrew/bin/brew *)",
       "Bash(/opt/homebrew/bin/node *)",
