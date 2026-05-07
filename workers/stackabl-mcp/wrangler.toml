@@ -1,0 +1,36 @@
+name = "stackabl-mcp"
+main = "index.js"
+compatibility_date = "2025-03-01"
+
+# KV namespace for OAuth state: auth codes (short TTL) and access tokens (long-lived).
+# Token storage choice: KV was selected over a hardcoded Worker secret so that tokens
+# can be rotated (by re-running the OAuth flow) without a Worker redeploy.
+# Create the namespace: wrangler kv:namespace create MCP_AUTH
+# Then paste the returned id and preview_id below.
+[[kv_namespaces]]
+binding    = "MCP_AUTH"
+id         = "b3cfe36134064fd88c8f480a528a204b"
+preview_id = "36e3394f60d74b4ba7e37b62a8f4f1f6"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# ALIGNI_TOKEN — same value as stackabl-aligni-proxy Worker
+# Do NOT put secrets in this file.
+
+# ── Deployment notes ────────────────────────────────────────────────────────────
+# 1. Create KV namespace:
+#      wrangler kv:namespace create MCP_AUTH
+#    Fill the returned id and preview_id into [[kv_namespaces]] above.
+#
+# 2. Set the Aligni token secret:
+#      wrangler secret put ALIGNI_TOKEN
+#
+# 3. Deploy:
+#      wrangler deploy
+#
+# 4. Worker URL will be: https://stackabl-mcp.operations-dae.workers.dev
+#    MCP endpoint:       https://stackabl-mcp.operations-dae.workers.dev/mcp
+#
+# 5. Add to Claude.ai:
+#    Settings → Integrations → Add custom integration
+#    URL: https://stackabl-mcp.operations-dae.workers.dev/mcp
+#    Complete the OAuth consent flow when prompted.

@@ -439,6 +439,9 @@ const ENDPOINT = location.hostname === 'localhost' || location.hostname === '127
   ? '/api/graphql'
   : 'https://stackabl-aligni-proxy.operations-dae.workers.dev';
 
+// Excluded from THIS dashboard only: 100464 is a generic pivot part used in BOMs.
+// The linear-inch math assumes real felt inventory; including it would skew totals.
+// Other tools (MCP search, BOM importer, etc.) should NOT inherit this exclusion.
 const EXCLUDE_PN         = '100464';
 const SQFT_PER_BOLT_YARD = 17.49;
 const DISC5_SQFT         = 0.252;

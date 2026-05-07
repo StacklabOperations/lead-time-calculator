@@ -75,7 +75,10 @@ Worker source code lives at worker/worker.js in this repo.
 - Always look up parts by MPN (manufacturerPn field) not Partnumber
 - manufacturerPn is the correct camelCase filter field — manufacturer_pn 
   is rejected
-- Part 100464 is a generic pivot part — always exclude from queries
+- Part 100464 is a generic pivot part used in BOMs. The felt-inventory dashboard
+  excludes it locally because the linear-inch math requires real felt inventory.
+  Other tools (MCP search, BOM importer reads, etc.) should NOT exclude it —
+  the exclusion is specific to that dashboard's calculation, not a global rule.
 - Felt parts: part type "Felt", UOM sqft, native unit (already converted 
   from Bolt Yards by Aligni, 1 Bolt Yard = 17.49 sqft)
 - Cut disc parts: part type "Sheet-Cut Profile", UOM each
@@ -232,12 +235,51 @@ Claude Code handles deployment — just say "push" and it will:
 
 ---
 
+## MCP Server (Agent Interface)
+
+The MCP server exposes Aligni read access to Claude.ai and other MCP clients.
+
+- **Worker source:** `workers/stackabl-mcp/index.js`
+- **Worker URL:** `https://stackabl-mcp.operations-dae.workers.dev`
+- **MCP endpoint:** `https://stackabl-mcp.operations-dae.workers.dev/mcp`
+- **Protocol:** Streamable HTTP (MCP spec 2025-03-26) — JSON responses, no SSE
+- **Auth:** OAuth 2.0 + PKCE, single-user consent page at `/authorize`
+- **Token storage:** Cloudflare KV namespace `MCP_AUTH` (rotatable without redeploy)
+- **IP allowlist:** Anthropic outbound `160.79.104.0/21` on `/mcp` (belt-and-suspenders)
+- **Spec:** `tools/mcp-server-spec.md`
+
+### Connecting Claude.ai
+1. Settings → Integrations → Add custom integration
+2. Enter: `https://stackabl-mcp.operations-dae.workers.dev/mcp`
+3. Complete the OAuth consent flow (opens `/authorize` in your browser)
+
+### Deploying / updating
+```
+cd workers/stackabl-mcp
+wrangler deploy
+```
+Secrets: `ALIGNI_TOKEN` (same value as `stackabl-aligni-proxy`).
+KV namespace `MCP_AUTH` must be created and IDs filled in `wrangler.toml` before first deploy.
+
+### Phase 1 tools (read-only)
+| Tool | What it does |
+|------|-------------|
+| `search_parts` | Substring search across MPN, revision description, revision comment |
+| `get_part` | Full part detail: revision, custom params, single-level BOM |
+| `get_inventory` | Live on-hand / available quantities with location breakdown |
+| `search_vendors` | Vendor name search |
+| `get_vendor` | Full vendor detail with contacts |
+| `search_manufacturers` | Manufacturer name search |
+
+---
+
 ## Tools Built So Far
 
 | Tool | File | What it does |
 |------|------|-------------|
-| Felt Inventory Dashboard | tools/felt-dashboard.html | Live felt inventory with available sqft and linear inch calculations by colour |
+| Felt Inventory Dashboard | tools/felt-inventory.html | Live felt inventory with available sqft and linear inch calculations by colour |
 | BOM Importer | tools/bom-importer.html | Bulk import BOM CSVs to Aligni via drag and drop with dry-run preview and release workflow |
+| MCP Server | workers/stackabl-mcp/index.js | Phase 1 read-only MCP server: 6 Aligni tools for Claude.ai |
 
 ---
 
