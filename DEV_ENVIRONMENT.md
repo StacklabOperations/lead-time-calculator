@@ -288,6 +288,13 @@ The MCP server exposes Aligni read access to Claude.ai and other MCP clients.
 2. Enter: `https://stackabl-mcp.operations-dae.workers.dev/mcp`
 3. Complete the OAuth consent flow (opens `/authorize` in your browser)
 
+### After deploying MCP changes
+After `wrangler deploy`, Claude.ai needs a tool list refresh before new tools appear:
+1. Open Settings → Integrations → find the stackabl-mcp integration
+2. Trigger a refresh (the "Tools list refreshed" toast confirms it)
+3. **Start a new conversation** — existing conversations cache the tool list from when
+   they were opened and will not pick up new tools even after a refresh
+
 ### Deploying / updating
 ```
 cd workers/stackabl-mcp
